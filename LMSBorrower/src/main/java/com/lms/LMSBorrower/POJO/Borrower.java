@@ -11,7 +11,6 @@ public class Borrower {
 	public Borrower() {
 	}
 
-	
 	public Borrower(Integer cardNo, String name, String address, String phone) {
 		super();
 		this.cardNo = cardNo;
