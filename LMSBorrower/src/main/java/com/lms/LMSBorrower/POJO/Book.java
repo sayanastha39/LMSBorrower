@@ -1,23 +1,23 @@
 package com.lms.LMSBorrower.POJO;
 
 public class Book {
-	private int bookId;
+	private Integer bookId;
 	private String title;
 	
 	public Book() {
 		
 	}
 	
-	public Book(int bookId, String title) {
+	public Book(Integer bookId, String title) {
 		this.bookId = bookId;
 		this.title = title;
 	}
 	
-	public int getBookId() {
+	public Integer getBookId() {
 		return bookId;
 	}
 
-	public void setBookId(int bookId) {
+	public void setBookId(Integer bookId) {
 		this.bookId = bookId;
 	}
 

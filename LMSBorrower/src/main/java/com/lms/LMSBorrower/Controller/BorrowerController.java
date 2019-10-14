@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,50 +24,67 @@ public class BorrowerController {
 	@Autowired
 	BorrowerService borrowerService;
 	
-	//it gives us path; everything in {} is going to be the input
-	//@PathVariable is for user inputs 
-	//@RequestMapping gives path 
+	//create new record in loans table and update copies
+	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/option/1/branch/{branch}/book/{book}", method = {RequestMethod.PUT, RequestMethod.GET}) 
 	
-	@RequestMapping("/LMSBorrower/cardNo/{cardNo}") 
-	public Borrower getBorrowerByCardNo(@PathVariable int cardNo) throws SQLException {
-		return borrowerService.getBorrowerByCardNo(cardNo);
-	}
-	
-	//checkout show branch
-	@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/1/branch") 
-	public  List<LibraryBranch> checkoutOption(@PathVariable int cardNo) throws SQLException {
-			return 	borrowerService.displayBranchCheckout();
-	}
-	
-	//checkout show book
-		@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/1/branch/{branch}/book") 
-		public  List<Book> displayCheckoutBook(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId) throws SQLException {
-				return 	borrowerService.displayBookCheckout(branchId);
-		}
+	public  ResponseEntity<String> writeLoans(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId) throws SQLException {
+		boolean exists = borrowerService.ifCardExistsBorrower(cardNo);
 		
-		//create new record in loans table and update copies
-		@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/option/1/branch/{branch}/book/{book}", method = { RequestMethod.PUT, RequestMethod.GET}) 
-		@ResponseStatus(code = HttpStatus.CREATED, reason = "Book checked out sucessfully.")
-		public  String writeLoans(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId) throws SQLException {
-			return borrowerService.writeLoans(cardNo, branchId, bookId);
-		}
-		
-		//return show branch
-		@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/2/branch") 
-		public  List<LibraryBranch> ReturnOption(@PathVariable (value="cardNo") int cardNo) throws SQLException {
-				return 	borrowerService.displayBranchCheckout();
-		}
-		
-		//return show book
-				@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/2/branch/{branch}/book") 
-				public  List<Book> displayReturnBook(@PathVariable(value="branch") int branchId, @PathVariable (value="cardNo") int cardNo) throws SQLException {
-						return 	borrowerService.displayBookReturn(branchId, cardNo);
+		if(exists== true) {
+			exists = borrowerService.ifCardExistsBranch(branchId);
+			
+			if(exists ==true) {
+				exists = borrowerService.ifCardExistsBook(branchId, bookId);
+				
+				if (exists ==true) {
+					borrowerService.writeLoans( cardNo, branchId, bookId);
+					return new ResponseEntity<>("Book checked out", HttpStatus.CREATED);
+					}
+				else {
+					return new ResponseEntity<>("Book id not found", HttpStatus.NOT_FOUND);
+					}
 				}
+			
+			else {
+				return new ResponseEntity<>("Branch id not found", HttpStatus.NOT_FOUND);
+				}
+			}
 		
-		//delete record in loans table and update copies
-		@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/option/2/branch/{branch}/book/{book}", method = { RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.GET}) 
-		@ResponseStatus(code = HttpStatus.CREATED, reason = "Book returned sucessfully.")
-		public  String writeReturn(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId) throws SQLException {
-			return borrowerService.writeReturn(cardNo, branchId, bookId);
+		else{
+			return new ResponseEntity<>("Invalid card", HttpStatus.NOT_FOUND);
+			}
+		
+	}
+	
+	
+	//delete record in loans table and update copies
+	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/option/2/branch/{branch}/book/{book}", method = {RequestMethod.PUT,  RequestMethod.GET, RequestMethod.DELETE}) 
+	public ResponseEntity<String> writeReturn(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId) throws SQLException {
+		
+		boolean exists = borrowerService.ifCardExistsBorrower(cardNo);
+		
+		if(exists== true) {
+			exists = borrowerService.ifCardExistsBranch(branchId);
+			if(exists ==true) {
+				exists = borrowerService.existsBookReturn(cardNo, branchId, bookId);
+				
+				if (exists ==true) {
+					borrowerService.writeReturn(cardNo, branchId, bookId);
+					return new ResponseEntity<>("Book returned",HttpStatus.ACCEPTED);
+					}
+				else {
+					return new ResponseEntity<>("Book id not found", HttpStatus.NOT_FOUND);
+					}
+				}
+			
+			else {
+					return new ResponseEntity<>("Branch id not found", HttpStatus.NOT_FOUND);
+				}
+			}
+		
+		
+		else{
+			return new ResponseEntity<>("Invalid card", HttpStatus.NOT_FOUND);
+			}
 		}
 }
