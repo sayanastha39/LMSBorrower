@@ -31,7 +31,8 @@ public class BorrowerService {
 		                .anyMatch(id -> id.getBranchId().equals(branchId));
 		 return exists;
 		 } 
-		        
+	 
+		//  book checkout    
 	 public boolean ifCardExistsBook( int branchId, int bookId) throws SQLException{
 		 List<Book> bk = borrowerDao.displayBookCheckout(branchId);
 		 boolean exists = bk.stream()
@@ -39,6 +40,14 @@ public class BorrowerService {
 		 return exists;
 		 } 
 	 
+	 public boolean existsBranchReturn(int branchId) throws SQLException{
+		 List<LibraryBranch> bch = borrowerDao.displayBranchReturn();
+		 boolean exists = bch.stream()
+		                .anyMatch(id -> id.getBranchId().equals(branchId));
+		 return exists;
+		 } 
+	 
+	 //book return
 	 public boolean existsBookReturn( int cardNo, int branchId,  int bookId) throws SQLException{
 		 List<Book> bk = borrowerDao.displayBookReturn(cardNo, branchId);
 		 boolean exists = bk.stream()
@@ -53,4 +62,17 @@ public class BorrowerService {
 	 public ResponseEntity<String> writeReturn(int cardNo, int branchId, int bookId) throws SQLException {
 	        return borrowerDao.writeReturn(cardNo, branchId, bookId);
 	    }
+	 
+	 public List<LibraryBranch> displayBranchCheckout() throws SQLException {
+		 return borrowerDao.displayBranchCheckout();
+	 }
+	 
+	 public List<Book>  displayBookCheckout(int branchId) throws SQLException {
+		 return borrowerDao.displayBookCheckout(branchId);
+	}
+	 
+	public List<Book> displayBookReturn(int branchId, int cardNo) throws SQLException {
+		return borrowerDao.displayBookReturn(branchId,  cardNo);
+	}
+
 }

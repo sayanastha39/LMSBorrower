@@ -64,7 +64,7 @@ public class BorrowerController {
 		boolean exists = borrowerService.ifCardExistsBorrower(cardNo);
 		
 		if(exists== true) {
-			exists = borrowerService.ifCardExistsBranch(branchId);
+			exists = borrowerService.existsBranchReturn(branchId);
 			if(exists ==true) {
 				exists = borrowerService.existsBookReturn(cardNo, branchId, bookId);
 				
@@ -87,4 +87,27 @@ public class BorrowerController {
 			return new ResponseEntity<>("Invalid card", HttpStatus.NOT_FOUND);
 			}
 		}
+	
+	//checkout show branch
+	@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/1/branch") 
+	public  List<LibraryBranch> checkoutOption(@PathVariable int cardNo) throws SQLException {
+			return 	borrowerService.displayBranchCheckout();
+	}
+	
+	//checkout show book
+		@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/1/branch/{branch}/book") 
+		public  List<Book> displayCheckoutBook(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId) throws SQLException {
+				return 	borrowerService.displayBookCheckout(branchId);
+		}
+		//return show branch
+		@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/2/branch") 
+		public  List<LibraryBranch> ReturnOption(@PathVariable (value="cardNo") int cardNo) throws SQLException {
+				return 	borrowerService.displayBranchCheckout();
+		}
+		
+		//return show book
+				@RequestMapping("/LMSBorrower/cardNo/{cardNo}/option/2/branch/{branch}/book") 
+				public  List<Book> displayReturnBook(@PathVariable(value="branch") int branchId, @PathVariable (value="cardNo") int cardNo) throws SQLException {
+						return 	borrowerService.displayBookReturn(branchId, cardNo);
+				}
 }

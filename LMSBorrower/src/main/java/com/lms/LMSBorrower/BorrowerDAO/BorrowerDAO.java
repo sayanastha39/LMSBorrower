@@ -28,8 +28,6 @@ public class BorrowerDAO {
 	       }
 		 return con;
 	    }
-	
-	
 	//get cardNo
 	public List<Borrower> ifCardExists() throws SQLException {
 		String sql = "SELECT * FROM tbl_borrower ";
@@ -85,7 +83,50 @@ public class BorrowerDAO {
 			}
 		return bk;
 		}
+	
+	//checkout finalize
+		public ResponseEntity <String> writeLoans( int cardNo, int branchId, int bookId) throws SQLException  {
+			Calendar c = Calendar.getInstance();
+			Date startDate = new Date(c.getTime().getTime());
+			PreparedStatement ps = null;
+		
+			//add in loans table
+				String sql = "INSERT INTO tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate) "
+								+ "VALUES (?, ?, ?, ?, DATE_ADD(?, INTERVAL 7 DAY))";
+				ps = getConnection().prepareStatement(sql);
+				ps.setInt(1, bookId);
+				ps.setInt(2, branchId);
+				ps.setInt(3, cardNo);
+				ps.setDate(4,  startDate);
+				ps.setDate(5, startDate);
+				ps.executeUpdate();
+				 
+				//update copies table
+				ps = getConnection().prepareStatement("UPDATE tbl_book_copies SET noOfCopies = noOfCopies-1 WHERE bookId = ? AND branchId = ? ");
+				ps.setInt (1, bookId);
+				ps.setInt (2, branchId);
+				ps.executeUpdate();
+				return new ResponseEntity<String>("Book checked out" , HttpStatus.CREATED);
+		}
     
+		//show branch for return
+		public List<LibraryBranch>  displayBranchReturn() throws SQLException {
+			String sql = "Select * from tbl_library_branch";
+			PreparedStatement ps = getConnection().prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			
+			List<LibraryBranch> bch = new ArrayList<LibraryBranch>();
+			
+			while (rs.next()) {
+				 LibraryBranch branch = new LibraryBranch();
+				 branch.setBranchId(rs.getInt("branchId"));
+				 branch.setBranchName(rs.getString("branchName"));
+				 branch.setBranchAddress(rs.getString("branchAddress"));
+				 bch.add(branch);	
+				}
+			return bch;
+			}
+		
 	
     //show book to return
     public List<Book>  displayBookReturn( int cardNo, int branchId) throws SQLException {
@@ -106,32 +147,6 @@ public class BorrowerDAO {
 			return bk;
 		}
     
-    
-	//checkout finalize
-	public ResponseEntity <String> writeLoans( int cardNo, int branchId, int bookId) throws SQLException  {
-		Calendar c = Calendar.getInstance();
-		Date startDate = new Date(c.getTime().getTime());
-		PreparedStatement ps = null;
-	
-		//add in loans table
-			String sql = "INSERT INTO tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate) "
-							+ "VALUES (?, ?, ?, ?, DATE_ADD(?, INTERVAL 7 DAY))";
-			ps = getConnection().prepareStatement(sql);
-			ps.setInt(1, bookId);
-			ps.setInt(2, branchId);
-			ps.setInt(3, cardNo);
-			ps.setDate(4,  startDate);
-			ps.setDate(5, startDate);
-			ps.executeUpdate();
-			 
-			//update copies table
-			ps = getConnection().prepareStatement("UPDATE tbl_book_copies SET noOfCopies = noOfCopies-1 WHERE bookId = ? AND branchId = ? ");
-			ps.setInt (1, bookId);
-			ps.setInt (2, branchId);
-			ps.executeUpdate();
-			return new ResponseEntity<String>("Book checked out" , HttpStatus.CREATED);
-	}
-	
 	
 	//return finalize
 	public ResponseEntity<String> writeReturn( int cardNo, int branchId, int bookId) throws SQLException  {
