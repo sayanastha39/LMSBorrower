@@ -3,6 +3,7 @@ package com.lms.LMSBorrower.Controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,8 @@ public class BorrowerController {
 	BorrowerService borrowerService;
 	
 	//create new record in loans table and update copies
-	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/checkout/branch/{branch}/book/{book}", method = {RequestMethod.PUT, RequestMethod.GET}) 
+	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/checkout/branch/{branch}/book/{book}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+			   produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, method = {RequestMethod.PUT, RequestMethod.GET}) 
 	
 	public  ResponseEntity<String> writeLoans(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId){
 		boolean exists = borrowerService.ifCardExistsBorrower(cardNo);
@@ -57,7 +59,8 @@ public class BorrowerController {
 	}
 	
 	//delete record in loans table and update copies
-	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/return/branch/{branch}/book/{book}", method = {RequestMethod.PUT,  RequestMethod.GET, RequestMethod.DELETE}) 
+	@RequestMapping(value ="/LMSBorrower/cardNo/{cardNo}/return/branch/{branch}/book/{book}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+			   produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, method = {RequestMethod.PUT,  RequestMethod.GET, RequestMethod.DELETE}) 
 	public ResponseEntity<String> writeReturn(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId, @PathVariable (value="book") int bookId){
 		
 		boolean exists = borrowerService.ifCardExistsBorrower(cardNo);
