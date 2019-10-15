@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.lms.LMSBorrower.BorrowerDAO.BorrowerDAO;
-import com.lms.LMSBorrower.POJO.Book;
-import com.lms.LMSBorrower.POJO.BookLoans;
+import com.lms.LMSBorrower.POJO.BookBL;
+import com.lms.LMSBorrower.POJO.BookLoansBL;
 import com.lms.LMSBorrower.POJO.Borrower;
 import com.lms.LMSBorrower.POJO.LibraryBranch;
 
@@ -31,7 +31,7 @@ public class BorrowerService {
 	 
 		//  book checkout    
 	 public boolean ifCardExistsBook( int branchId, int bookId){
-		 List<Book> bk = borrowerDao.displayBookCheckout(branchId);
+		 List<BookBL> bk = borrowerDao.displayBookCheckout(branchId);
 		 boolean exists = bk.stream()
 			                .anyMatch(id -> id.getBookId().equals(bookId));
 		 return exists;
@@ -46,7 +46,7 @@ public class BorrowerService {
 	 
 	 //book return
 	 public boolean existsBookReturn( int cardNo, int branchId,  int bookId){
-		 List<Book> bk = borrowerDao.displayBookReturn(cardNo, branchId);
+		 List<BookBL> bk = borrowerDao.displayBookReturn(cardNo, branchId);
 		 boolean exists = bk.stream()
 			                .anyMatch(id -> id.getBookId().equals(bookId));
 		 return exists;
@@ -54,7 +54,7 @@ public class BorrowerService {
 	 
 	 //CHECKOUT VALIDATE IF Exists
 	 public boolean existsCheckout( int cardNo, int branchId,  int bookId){
-		 List<BookLoans> bk = borrowerDao.checkoutValidate(cardNo, branchId, bookId);
+		 List<BookLoansBL> bk = borrowerDao.checkoutValidate(cardNo, branchId, bookId);
 		 boolean exists = bk.stream()
 			                .anyMatch(id -> id.getCardNo().equals(cardNo) && id.getBranchId().equals(branchId) && id.getBookId().equals(bookId));
 		 return exists;
@@ -72,11 +72,11 @@ public class BorrowerService {
 		 return borrowerDao.displayBranchCheckout();
 	 }
 	 
-	 public List<Book>  displayBookCheckout(int branchId)  {
+	 public List<BookBL>  displayBookCheckout(int branchId)  {
 		 return borrowerDao.displayBookCheckout(branchId);
 	}
 	 
-	public List<Book> displayBookReturn(int branchId, int cardNo) {
+	public List<BookBL> displayBookReturn(int branchId, int cardNo) {
 		return borrowerDao.displayBookReturn(branchId,  cardNo);
 	}
 }

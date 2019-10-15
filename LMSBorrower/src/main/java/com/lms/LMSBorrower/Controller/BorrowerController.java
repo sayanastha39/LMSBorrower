@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.lms.LMSBorrower.POJO.Book;
+import com.lms.LMSBorrower.POJO.BookBL;
 import com.lms.LMSBorrower.POJO.LibraryBranch;
 import com.lms.LMSBorrower.Service.BorrowerService;
 
@@ -92,7 +92,7 @@ public class BorrowerController {
 	
 	//checkout show book
 	@RequestMapping("/LMSBorrower/cardNo/{cardNo}/checkout/branch/{branch}/book") 
-	public  List<Book> displayCheckoutBook(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId) {
+	public  List<BookBL> displayCheckoutBook(@PathVariable (value="cardNo") int cardNo, @PathVariable(value="branch") int branchId) {
 		return 	borrowerService.displayBookCheckout(branchId);
 	}
 	
@@ -103,7 +103,7 @@ public class BorrowerController {
 		}
 	//return show book
 	@RequestMapping("/LMSBorrower/cardNo/{cardNo}/return/branch/{branch}/book") 
-	public  List<Book> displayReturnBook(@PathVariable(value="branch") int branchId, @PathVariable (value="cardNo") int cardNo) {
+	public  List<BookBL> displayReturnBook(@PathVariable(value="branch") int branchId, @PathVariable (value="cardNo") int cardNo) {
 		return 	borrowerService.displayBookReturn(branchId, cardNo);
 	}
 }

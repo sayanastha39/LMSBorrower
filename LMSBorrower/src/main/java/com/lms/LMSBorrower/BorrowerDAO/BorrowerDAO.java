@@ -71,8 +71,8 @@ public class BorrowerDAO {
 		}
 	
 	//show  book for checkout
-	public List<Book>  displayBookCheckout(int branchId)  {
-		List<Book> bk = new ArrayList<Book>();
+	public List<BookBL>  displayBookCheckout(int branchId)  {
+		List<BookBL> bk = new ArrayList<BookBL>();
 		try {
 			String sql= ("SELECT tbl_book.bookId, CONCAT(tbl_book.title, ' by ' , tbl_author.authorName) AS title  FROM tbl_book INNER JOIN tbl_author ON tbl_book.authId = tbl_author.authorId INNER JOIN tbl_book_copies ON tbl_book.bookId =  tbl_book_copies.bookId INNER JOIN tbl_library_branch ON tbl_book_copies.branchId = tbl_library_branch.branchId WHERE tbl_library_branch.branchId = ? AND tbl_book_copies.noOfCopies >=1 ");
 			PreparedStatement ps = getConnection().prepareStatement(sql);
@@ -80,7 +80,7 @@ public class BorrowerDAO {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Book book = new Book();
+				BookBL book = new BookBL();
 				book.setBookId(rs.getInt("bookId"));
 				book.setTitle(rs.getString("title"));
 				bk.add(book);	
@@ -93,9 +93,9 @@ public class BorrowerDAO {
 		}
 	
 	//checkout validate
-	public List<BookLoans> checkoutValidate( int cardNo, int branchId, int bookId) {
+	public List<BookLoansBL> checkoutValidate( int cardNo, int branchId, int bookId) {
 		PreparedStatement ps = null;
-		List<BookLoans> bc = new ArrayList<BookLoans>();
+		List<BookLoansBL> bc = new ArrayList<BookLoansBL>();
 		
 		try {
 			//validate if already checked out
@@ -106,7 +106,7 @@ public class BorrowerDAO {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				BookLoans loans = new BookLoans();
+				BookLoansBL loans = new BookLoansBL();
 				loans.setBookId(rs.getInt("bookId"));
 				loans.setBranchId(rs.getInt("branchId"));
 				loans.setCardNo(rs.getInt("cardNo"));
@@ -173,8 +173,8 @@ public class BorrowerDAO {
 		}
 		
 		//show book to return
-		public List<Book>  displayBookReturn( int cardNo, int branchId){
-			List<Book> bk = new ArrayList<Book>();
+		public List<BookBL>  displayBookReturn( int cardNo, int branchId){
+			List<BookBL> bk = new ArrayList<BookBL>();
 			try {
 				String sql= ("SELECT tbl_book.bookId, CONCAT(tbl_book.title, ' by ' , tbl_author.authorName)  AS title FROM tbl_book INNER JOIN tbl_author ON tbl_book.authId = tbl_author.authorId INNER JOIN tbl_book_loans ON tbl_book.bookId =  tbl_book_loans.bookId INNER JOIN tbl_borrower ON tbl_book_loans.cardNo = tbl_borrower.cardNo INNER JOIN tbl_library_branch ON tbl_book_loans.branchId = tbl_library_branch.branchId WHERE tbl_library_branch.branchId = ? AND tbl_borrower.cardNo =?");
 				PreparedStatement ps = getConnection().prepareStatement(sql);
@@ -183,7 +183,7 @@ public class BorrowerDAO {
 				ResultSet rs = ps.executeQuery();
 	
 				while (rs.next()) {
-					Book book = new Book();
+					BookBL book = new BookBL();
 					book.setBookId(rs.getInt("bookId"));
 					book.setTitle(rs.getString("title"));
 					bk.add(book);	

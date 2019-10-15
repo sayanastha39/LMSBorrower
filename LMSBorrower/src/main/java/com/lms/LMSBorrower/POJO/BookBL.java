@@ -1,14 +1,14 @@
 package com.lms.LMSBorrower.POJO;
 
-public class Book {
+public class BookBL{
 	private Integer bookId;
 	private String title;
 	
-	public Book() {
+	public BookBL() {
 		
 	}
 	
-	public Book(Integer bookId, String title) {
+	public BookBL(Integer bookId, String title) {
 		this.bookId = bookId;
 		this.title = title;
 	}
