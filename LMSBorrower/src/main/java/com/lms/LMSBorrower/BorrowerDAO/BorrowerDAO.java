@@ -9,12 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import com.lms.LMSBorrower.POJO.*;
-import java.sql.SQLException;
 @Component
 public class BorrowerDAO {
 	

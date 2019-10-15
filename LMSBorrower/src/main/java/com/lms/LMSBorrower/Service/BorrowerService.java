@@ -79,9 +79,4 @@ public class BorrowerService {
 	public List<Book> displayBookReturn(int branchId, int cardNo) {
 		return borrowerDao.displayBookReturn(branchId,  cardNo);
 	}
-	public List<Borrower>  getBorrowerByCardNo() {
-        return borrowerDao.ifCardExists();
-    }
-
-
 }

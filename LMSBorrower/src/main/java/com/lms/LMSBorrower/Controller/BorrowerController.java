@@ -1,6 +1,5 @@
 package com.lms.LMSBorrower.Controller;
 
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.lms.LMSBorrower.POJO.Book;
-import com.lms.LMSBorrower.POJO.Borrower;
 import com.lms.LMSBorrower.POJO.LibraryBranch;
 import com.lms.LMSBorrower.Service.BorrowerService;
 
@@ -39,25 +37,23 @@ public class BorrowerController {
 				
 					if (exists ==false) {
 						borrowerService.writeLoans( cardNo, branchId, bookId);
-						return new ResponseEntity<>("Book sucessfully checked out", HttpStatus.CREATED);
+						return new ResponseEntity<String>("Book sucessfully checked out!", HttpStatus.CREATED);
 					}
 					else {
-						return new ResponseEntity<>("Book already checked out", HttpStatus.CONFLICT);
+						return new ResponseEntity<String>("Book has already been checked out!", HttpStatus.METHOD_NOT_ALLOWED);
 					}
 				}
 				else {
-					return new ResponseEntity<>("Book id not found", HttpStatus.NOT_FOUND);
+					return new ResponseEntity<String>("Invalid BookId",  HttpStatus.NOT_FOUND);
 				}
 			}
 			else {
-				return new ResponseEntity<>("Branch id not found", HttpStatus.NOT_FOUND);
+				return new ResponseEntity<String>("Invalid BranchId", HttpStatus.NOT_FOUND);
 				}
 			}
-		
 		else{
-			return new ResponseEntity<>("Invalid card", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Invalid CardNo", HttpStatus.NOT_FOUND);
 			}
-	
 	}
 	
 	//delete record in loans table and update copies
@@ -70,24 +66,21 @@ public class BorrowerController {
 			exists = borrowerService.existsBranchReturn(branchId);
 			if(exists ==true) {
 				exists = borrowerService.existsBookReturn(cardNo, branchId, bookId);
-				
 				if (exists ==true) {
 					borrowerService.writeReturn(cardNo, branchId, bookId);
-					return new ResponseEntity<>("Book returned",HttpStatus.ACCEPTED);
+					return new ResponseEntity<String>("Book sucessfully returned!", HttpStatus.ACCEPTED);
 					}
 				else {
-					return new ResponseEntity<>("Book id not found", HttpStatus.NOT_FOUND);
+					return new ResponseEntity<String>("Invalid BookId", HttpStatus.NOT_FOUND);
 					}
 				}
 			
 			else {
-					return new ResponseEntity<>("Branch id not found", HttpStatus.NOT_FOUND);
+					return new ResponseEntity<String>("Invalid BranchId",HttpStatus.NOT_FOUND);
 				}
 			}
-		
-		
 		else{
-			return new ResponseEntity<>("Invalid card", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Invalid CardNo", HttpStatus.NOT_FOUND);
 			}
 		}
 	
@@ -113,9 +106,4 @@ public class BorrowerController {
 	public  List<Book> displayReturnBook(@PathVariable(value="branch") int branchId, @PathVariable (value="cardNo") int cardNo) {
 		return 	borrowerService.displayBookReturn(branchId, cardNo);
 	}
-	@RequestMapping("/LMSBorrower/cardNo") 
-	public List<Borrower>  ifCardExists() {
-		return borrowerService.getBorrowerByCardNo();
-	}
-
 }
