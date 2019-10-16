@@ -17,66 +17,54 @@ public class BorrowerService {
 	 
 	 public boolean ifCardExistsBorrower(int cardNo){
 		 List<Borrower> list = borrowerDao.ifCardExists();
-		 boolean exists = list.stream()
+		 boolean cardExists = list.stream()
 	                .anyMatch(id -> id.getCardNo().equals(cardNo));
-		 return exists;
+		 return cardExists;
 		 }
 	 
 	 public boolean ifCardExistsBranch(int branchId) {
 		 List<LibraryBranch> bch = borrowerDao.displayBranchCheckout();
-		 boolean exists = bch.stream()
+		 boolean branchExists = bch.stream()
 		                .anyMatch(id -> id.getBranchId().equals(branchId));
-		 return exists;
+		 return branchExists;
 		 } 
 	 
 		//  book checkout    
 	 public boolean ifCardExistsBook( int branchId, int bookId){
 		 List<BookBL> bk = borrowerDao.displayBookCheckout(branchId);
-		 boolean exists = bk.stream()
+		 boolean bookExists  = bk.stream()
 			                .anyMatch(id -> id.getBookId().equals(bookId));
-		 return exists;
+		 return bookExists;
 		 } 
 	 
 	 public boolean existsBranchReturn(int branchId) {
 		 List<LibraryBranch> bch = borrowerDao.displayBranchReturn();
-		 boolean exists = bch.stream()
+		 boolean branchExists = bch.stream()
 		                .anyMatch(id -> id.getBranchId().equals(branchId));
-		 return exists;
+		 return branchExists;
 		 } 
 	 
 	 //book return
 	 public boolean existsBookReturn( int cardNo, int branchId,  int bookId){
 		 List<BookBL> bk = borrowerDao.displayBookReturn(cardNo, branchId);
-		 boolean exists = bk.stream()
+		 boolean bookExists = bk.stream()
 			                .anyMatch(id -> id.getBookId().equals(bookId));
-		 return exists;
+		 return bookExists;
 		 } 
 	 
 	 //CHECKOUT VALIDATE IF Exists
 	 public boolean existsCheckout( int cardNo, int branchId,  int bookId){
 		 List<BookLoansBL> bk = borrowerDao.checkoutValidate(cardNo, branchId, bookId);
-		 boolean exists = bk.stream()
+		 boolean checkedOut = bk.stream()
 			                .anyMatch(id -> id.getCardNo().equals(cardNo) && id.getBranchId().equals(branchId) && id.getBookId().equals(bookId));
-		 return exists;
+		 return checkedOut;
 		 }
 	 
-	 public void writeLoans(int cardNo, int branchId, int bookId){
-	        borrowerDao.writeLoans(cardNo, branchId, bookId);
+	 public void writeLoans(BookLoansBL bookLoansBL){
+	        borrowerDao.writeLoans(bookLoansBL);
 	    }
 	 
-	 public void writeReturn(int cardNo, int branchId, int bookId) {
-	         borrowerDao.writeReturn(cardNo, branchId, bookId);
+	 public void writeReturn(BookLoansBL bookLoansBL) {
+	         borrowerDao.writeReturn(bookLoansBL);
 	    }
-	 
-	 public List<LibraryBranch> displayBranchCheckout(){
-		 return borrowerDao.displayBranchCheckout();
-	 }
-	 
-	 public List<BookBL>  displayBookCheckout(int branchId)  {
-		 return borrowerDao.displayBookCheckout(branchId);
-	}
-	 
-	public List<BookBL> displayBookReturn(int branchId, int cardNo) {
-		return borrowerDao.displayBookReturn(branchId,  cardNo);
-	}
 }
