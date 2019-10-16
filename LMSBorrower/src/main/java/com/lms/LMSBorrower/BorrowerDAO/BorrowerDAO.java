@@ -24,7 +24,6 @@ public class BorrowerDAO {
 	    }
 		return con;
 	}
-	
 	//get cardNo
 	public List<Borrower> ifCardExists(){
 		List<Borrower> brw = new ArrayList<Borrower>();
@@ -118,37 +117,6 @@ public class BorrowerDAO {
 		}
 		return bc;
 	}
-	
-	
-	//checkout finalize
-		public void writeLoans( int cardNo, int branchId, int bookId){
-			Calendar c = Calendar.getInstance();
-			Date startDate = new Date(c.getTime().getTime());
-			PreparedStatement ps = null;
-			
-			try {
-			//add in loans table
-				String sql = "INSERT INTO tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate) "
-								+ "VALUES (?, ?, ?, ?, DATE_ADD(?, INTERVAL 7 DAY))";
-				ps = getConnection().prepareStatement(sql);
-				ps.setInt(1, bookId);
-				ps.setInt(2, branchId);
-				ps.setInt(3, cardNo);
-				ps.setDate(4,  startDate);
-				ps.setDate(5, startDate);
-				ps.executeUpdate();
-				 
-				//update copies table
-				ps = getConnection().prepareStatement("UPDATE tbl_book_copies SET noOfCopies = noOfCopies-1 WHERE bookId = ? AND branchId = ? ");
-				ps.setInt (1, bookId);
-				ps.setInt (2, branchId);
-				ps.executeUpdate();
-				//return new ResponseEntity<String>("Book checked out" , HttpStatus.CREATED);
-			}
-			catch(SQLException e) {
-	        	System.out.println(e);
-			}
-		}
     
 		//show branch for return
 		public List<LibraryBranch>  displayBranchReturn() {
@@ -171,7 +139,6 @@ public class BorrowerDAO {
 			}
 			return bch;
 		}
-		
 		//show book to return
 		public List<BookBL>  displayBookReturn( int cardNo, int branchId){
 			List<BookBL> bk = new ArrayList<BookBL>();
@@ -194,23 +161,51 @@ public class BorrowerDAO {
 			}
 			return bk;
 		}
+		//checkout finalize
+		public void writeLoans(BookLoansBL bookLoansBL){
+			Calendar c = Calendar.getInstance();
+			Date startDate = new Date(c.getTime().getTime());
+			PreparedStatement ps = null;
+			
+			try {
+			//add in loans table
+				String sql = "INSERT INTO tbl_book_loans(bookId, branchId, cardNo, dateOut, dueDate) "
+								+ "VALUES (?, ?, ?, ?, DATE_ADD(?, INTERVAL 7 DAY))";
+				ps = getConnection().prepareStatement(sql);
+				ps.setInt(1, bookLoansBL.getBookId());
+				ps.setInt(2, bookLoansBL.getBranchId());
+				ps.setInt(3, bookLoansBL.getCardNo());
+				ps.setDate(4,  startDate);
+				ps.setDate(5, startDate);
+				ps.executeUpdate();
+				 
+				//update copies table
+				ps = getConnection().prepareStatement("UPDATE tbl_book_copies SET noOfCopies = noOfCopies-1 WHERE bookId = ? AND branchId = ? ");
+				ps.setInt (1, bookLoansBL.getBookId());
+				ps.setInt (2, bookLoansBL.getBranchId());
+				ps.executeUpdate();
+			}
+			catch(SQLException e) {
+	        	System.out.println(e);
+			}
+		}
 		
-		//return finalize ResponseEntity<String>
-		public void writeReturn( int cardNo, int branchId, int bookId){
+		//return finalize 
+		public void writeReturn(BookLoansBL bookLoansBL){
 			PreparedStatement ps = null;
 			try {
 				//delete record from loans
 				String sql ="DELETE FROM tbl_book_loans  WHERE cardNo = ? AND branchId = ? AND bookId = ? ";
 				ps = getConnection().prepareStatement(sql);
-				ps.setInt(1, cardNo);
-				ps.setInt(2, branchId);
-				ps.setInt(3, bookId);
+				ps.setInt(1, bookLoansBL.getCardNo());
+				ps.setInt(2, bookLoansBL.getBranchId());
+				ps.setInt(3, bookLoansBL.getBookId());
 				ps.executeUpdate();
 			
 				//update copies table
 				ps = getConnection().prepareStatement("UPDATE tbl_book_copies SET noOfCopies = noOfCopies+1 WHERE bookId = ? AND branchId = ? ");
-				ps.setInt (1, bookId);
-				ps.setInt (2, branchId);
+				ps.setInt (1, bookLoansBL.getBookId());
+				ps.setInt (2, bookLoansBL.getBranchId());
 				ps.executeUpdate();
 			}
 			catch(SQLException e) {
